@@ -1,69 +1,87 @@
-local wezterm = require 'wezterm';
-local keys = require 'keys';
-local colors = require 'colors';
-local tab_bar_style = require 'tab';
+local wezterm = require("wezterm")
+local keys = require("keys")
+local colors = require("colors")
+local tab_bar_style = require("tab")
 
 -- FIXME how to get something like padding = auto?
 local function recompute_padding(window)
-  local window_dims = window:get_dimensions();
-  local overrides = window:get_config_overrides() or {}
+	local window_dims = window:get_dimensions()
+	local overrides = window:get_config_overrides() or {}
 
-  if not window_dims.is_full_screen then
-    if not overrides.window_padding then
-      return;
-    end
-    overrides.window_padding = nil;
-  else
-    local new_padding = {
-      left = '0.7%',
-      right = '0.7%',
-      top = '0.67%',
-      bottom = 0,
-    };
-    if overrides.window_padding and new_padding.left == overrides.window_padding.left then
-      -- padding is same, avoid triggering further changes
-      return
-    end
-    overrides.window_padding = new_padding
-  end
-  window:set_config_overrides(overrides)
+	if not window_dims.is_full_screen then
+		if not overrides.window_padding then
+			return
+		end
+		overrides.window_padding = nil
+	else
+		local new_padding = {
+			left = "0.7%",
+			right = "0.7%",
+			top = "0.67%",
+			bottom = 0,
+		}
+		if overrides.window_padding and new_padding.left == overrides.window_padding.left then
+			-- padding is same, avoid triggering further changes
+			return
+		end
+		overrides.window_padding = new_padding
+	end
+	window:set_config_overrides(overrides)
 end
 
-wezterm.on("window-resized", function(window, _ --[[pane]])
-  recompute_padding(window)
-end);
+wezterm.on("window-resized", function(
+	window,
+	_ --[[pane]]
+)
+	recompute_padding(window)
+end)
 
 wezterm.on("window-config-reloaded", function(window)
-  recompute_padding(window)
-end);
+	recompute_padding(window)
+end)
 
 return {
-  use_ime = true,
-  colors = colors,
-  font = wezterm.font_with_fallback({
-    "FiraCode Nerd Font",
-    "Noto Sans CJK SC"
-  }),
-  font_size = 14,
-  leader = keys.leader,
-  keys = keys.keys,
-  tab_bar_at_top = true,
-  tab_bar_style = tab_bar_style,
-  enable_scroll_bar = false,
-  window_padding = {
-    top = 0,
-    bottom = 0,
-    left = 0,
-    right = 0,
-  },
-  window_decorations = "RESIZE",
-  window_frame = {
-    font = wezterm.font_with_fallback({
-      "FiraCode Nerd Font",
-      "Noto Sans CJK SC"
-    }),
-  },
-  window_background_opacity = 0.9,
-  initial_rows = 30,
-  initial_cols = 100,
+	use_ime = true,
+	colors = colors,
+	font = wezterm.font_with_fallback({
+		"FiraCode Nerd Font",
+		"Noto Sans CJK SC",
+	}),
+	font_size = 14,
+	leader = keys.leader,
+	keys = keys.keys,
+	tab_bar_at_top = true,
+	tab_bar_style = tab_bar_style,
+	tab_max_width = 25,
+	hide_tab_bar_if_only_one_tab = false,
+	show_tab_index_in_tab_bar = false,
+	enable_scroll_bar = false,
+	window_padding = {
+		top = 5,
+		bottom = 5,
+		left = 5,
+		right = 5,
+	},
+	adjust_window_size_when_changing_font_size = true,
+	native_macos_fullscreen_mode = true,
+	window_decorations = "RESIZE",
+	window_frame = {
+		font = wezterm.font_with_fallback({
+			"FiraCode Nerd Font",
+			"Noto Sans CJK SC",
+		}),
+	},
+	window_background_opacity = 0.9,
+	window_background_image_hsb = {
+		brightness = 0.8,
+		hue = 1.0,
+		saturation = 1.0,
+	},
+	window_close_confirmation = "NeverPrompt",
+	initial_rows = 30,
+	initial_cols = 100,
+
+	-- keys
+	disable_default_key_bindings = false,
+	use_dead_keys = false,
 }
