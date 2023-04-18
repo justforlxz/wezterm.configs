@@ -1,7 +1,11 @@
 local wezterm = require("wezterm")
 local keys = require("keys")
-local colors = require("colors")
-local tab_bar_style = require("tab")
+
+-- The filled in variant of the < symbol
+local SOLID_LEFT_ARROW = wezterm.nerdfonts.pl_right_hard_divider
+
+-- The filled in variant of the > symbol
+local SOLID_RIGHT_ARROW = wezterm.nerdfonts.pl_left_hard_divider
 
 -- FIXME how to get something like padding = auto?
 local function recompute_padding(window)
@@ -40,48 +44,62 @@ wezterm.on("window-config-reloaded", function(window)
 	recompute_padding(window)
 end)
 
-return {
-	use_ime = true,
-	colors = colors,
+local function scheme_for_appearance(appearance)
+  if appearance:find "Dark" then
+    return "ChallengerDeep"
+  else
+    return "ChallengerDeep"
+  end
+end
+
+local config = {}
+
+if wezterm.config_builder then
+    config = wezterm.config_builder()
+end
+
+
+config.use_ime = true
+config.font = wezterm.font_with_fallback({
+	"FiraCode Nerd Font",
+	"Noto Sans CJK SC",
+})
+config.font_size = 14
+config.leader = keys.leader
+config.keys = keys.keys
+config.tab_bar_at_bottom = true
+config.color_scheme = scheme_for_appearance(wezterm.gui.get_appearance())
+config.tab_max_width = 25
+config.hide_tab_bar_if_only_one_tab = false
+config.show_tab_index_in_tab_bar = false
+config.enable_scroll_bar = false
+config.window_padding = {
+	top = 5,
+	bottom = 5,
+	left = 5,
+	right = 5,
+}
+config.adjust_window_size_when_changing_font_size = true
+config.native_macos_fullscreen_mode = true
+config.window_decorations = "RESIZE"
+config.window_frame = {
 	font = wezterm.font_with_fallback({
 		"FiraCode Nerd Font",
 		"Noto Sans CJK SC",
 	}),
-	font_size = 14,
-	leader = keys.leader,
-	keys = keys.keys,
-	tab_bar_at_top = true,
-	tab_bar_style = tab_bar_style,
-	tab_max_width = 25,
-	hide_tab_bar_if_only_one_tab = false,
-	show_tab_index_in_tab_bar = false,
-	enable_scroll_bar = false,
-	window_padding = {
-		top = 5,
-		bottom = 5,
-		left = 5,
-		right = 5,
-	},
-	adjust_window_size_when_changing_font_size = true,
-	native_macos_fullscreen_mode = true,
-	window_decorations = "RESIZE",
-	window_frame = {
-		font = wezterm.font_with_fallback({
-			"FiraCode Nerd Font",
-			"Noto Sans CJK SC",
-		}),
-	},
-	window_background_opacity = 0.9,
-	window_background_image_hsb = {
-		brightness = 0.8,
-		hue = 1.0,
-		saturation = 1.0,
-	},
-	window_close_confirmation = "NeverPrompt",
-	initial_rows = 30,
-	initial_cols = 100,
-
-	-- keys
-	disable_default_key_bindings = false,
-	use_dead_keys = false,
 }
+config.window_background_opacity = 0.9
+config.window_background_image_hsb = {
+	brightness = 0.8,
+	hue = 1.0,
+	saturation = 1.0,
+}
+config.window_close_confirmation = "NeverPrompt"
+config.initial_rows = 30
+config.initial_cols = 100
+
+-- keys
+config.disable_default_key_bindings = false
+config.use_dead_keys = false
+
+return config
